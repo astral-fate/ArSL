@@ -1,0 +1,98 @@
+classDiagram
+    class InputController {
+        -camera: VideoCapture
+        -fileSystem: FileSystem
+        +openCamera(): void
+        +uploadFile(file: File): void
+        +validateInput(input: Media): boolean
+        +processInput(): ProcessedMedia
+    }
+
+    class ProcessedMedia {
+        -id: int
+        -mediaType: string
+        -frameCount: int
+        
+        +extractFrames(): List~Frame~
+        +getNextFrame(): Frame
+    
+    }
+
+    class Frame {
+        -id: int
+        -processedMediaId: int
+        -imageData: blob
+        -height: int
+        -width: int
+        -channels: int
+        -sequenceNumber: int
+
+        +processFrame(): void
+        +resize(): void
+        +normalize(): void
+    }
+
+    class ModelInput {
+        -id: int
+        -frameId: int
+        -preprocessedData: blob
+        -inputShape: string
+        -inputType: string
+        -normalizationFactor: float
+        +prepareForModel(): void
+        +validateShape(): boolean
+        +getNormalizedData(): array
+    }
+
+    class DeepLearningModel {
+        -model: CNN
+        -inputShape: tuple
+        -outputClasses: int
+        +detectGestures(input: ModelInput): Gesture
+        +extractFeatures(): array
+        +predict(): array
+        +loadModel(): void
+    }
+
+    class Gesture {
+        -id: int
+        -modelInputId: int
+        -featureVector: blob
+        -gestureLabel: string
+        -confidenceScore: float
+        +getLabel(): string
+        +getConfidence(): float
+        +validate(): boolean
+    }
+
+    class TranslationResult {
+        -id: int
+        -gestureId: int
+        -arabicText: string
+        -confidence: float
+        +translate(): string
+        +formatText(): string
+        +getConfidence(): float
+    }
+
+    class UserInterface {
+        - id: int
+        +displayResult(translation: TranslationResult): void
+        +displayOptions(): void
+    }
+
+    InputController *-- ProcessedMedia : Creates
+    ProcessedMedia *-- Frame : Contains
+    DeepLearningModel *-- ModelInput : Processes
+    
+    ProcessedMedia o-- ModelInput : Generates
+    ModelInput o-- Gesture : Produces
+    Gesture o-- TranslationResult : Translates to
+    UserInterface o-- TranslationResult : Displays
+
+    InputController ..> ProcessedMedia : processes
+    ProcessedMedia ..> Frame : extracts
+    ModelInput ..> DeepLearningModel : feeds
+    DeepLearningModel ..> Gesture : predicts
+    Gesture ..> TranslationResult : translates
+    TranslationResult ..> UserInterface : displays
