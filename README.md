@@ -88,6 +88,9 @@ The table below summarizes the layer architecture of the model.
 | Linear-18          | [1, 32]         |  16,416|
 | **Total Params** | | **26,094,944** |
 
+![model_graph](https://github.com/user-attachments/assets/15a1f710-1c73-478e-9804-844f2dddb222)
+
+
 ## 3. Training Details
 
 The model was trained under the following settings:
