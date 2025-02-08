@@ -200,7 +200,7 @@ Figure 2: Training and Testing Loss and Accuracy Curves. The loss curves (left) 
 
 ## Integeration with OpenCV
 
-
+We have to load the pre-trained pytorch model; specifally the [best_arsl_model.pth](https://drive.google.com/file/d/1rhVDFp0SIULFr2nnognrWhd5oWY8O_RO/view?usp=sharing) and [class_mapping](https://drive.google.com/file/d/1DhiRZHU23ME4AK6-c2jAPl0Xck73gXb5/view?usp=sharing)
 ## Testing the model with an image
 
 ![Screenshot 2025-02-07 193800](https://github.com/user-attachments/assets/2e7296de-9481-49ad-8e7f-90fe371012f6)
