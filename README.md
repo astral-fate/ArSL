@@ -88,7 +88,8 @@ The table below summarizes the layer architecture of the model.
 | Linear-18          | [1, 32]         |  16,416|
 | **Total Params** | | **26,094,944** |
 
-![model_graph](https://github.com/user-attachments/assets/15a1f710-1c73-478e-9804-844f2dddb222)
+
+![model arch](https://github.com/user-attachments/assets/7e17978a-13fb-4e9e-95fb-6f3ae0f96f02)
 
 
 ## 3. Training Details
@@ -108,7 +109,8 @@ The model was trained under the following settings:
 
 The model achieved a **Best Test Accuracy: 96.83%**. The following metrics were used for evaluation:
 
-*   **Classification Report:** Demonstrates precision, recall, and F1-score for each class.
+## Classification Report
+Demonstrates precision, recall, and F1-score for each class.
 
 **Table 2: Classification Report**
 
@@ -196,14 +198,17 @@ Figure 2: Training and Testing Loss and Accuracy Curves. The loss curves (left) 
 
 
 
-## 5. Future Directions
+## Integeration with OpenCV
 
-*   **GPU Evaluation:** Conduct evaluation on a GPU for more precise performance assessment and more accurate benchmarks.
-*   **Class-Specific Analysis:** Further inspect the confusion matrix to pinpoint the most frequent misclassifications.
-*   **Address Visualization Issues:** Resolve issues with `visualkeras` and/or `torchview` for a more complete model overview.
-*   **Data Augmentation:** Implement advanced augmentation strategies.
-*   **Architecture Exploration:** Experiment with different CNN architectures.
-*   **Hyperparameter Tuning:** Explore further hyperparameter tuning with AdamW
+
+## Testing the model with an image
+
+![Screenshot 2025-02-07 193800](https://github.com/user-attachments/assets/2e7296de-9481-49ad-8e7f-90fe371012f6)
+
+## Testing the model in-real time
+![Screenshot 2025-02-07 185400](https://github.com/user-attachments/assets/011479ef-0961-4254-b7a5-dbdb66861043)
+
+
 
 ## 6. Conclusion
 
