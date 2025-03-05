@@ -1,3 +1,10 @@
+## Setting up gpu env
+
+```
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+```
+
+
 
 ### 1.2. Data Splitting
 
