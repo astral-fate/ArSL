@@ -1,3 +1,8 @@
+# Arabic Sign Language Translator Demo
+
+# First, let's save our translator application code
+
+%%writefile arsl_translator_app.py
 import tkinter as tk
 from tkinter import filedialog, ttk
 from PIL import Image, ImageTk
@@ -10,7 +15,7 @@ import numpy as np
 import threading
 import time
 
-# Define the ArSLAttentionLSTM model (same as in your code)
+# Define the ArSLAttentionLSTM model
 class ArSLAttentionLSTM(nn.Module):
     def __init__(self, num_classes, hidden_size=512, num_layers=2, bidirectional=True, dropout_rate=0.5):
         super(ArSLAttentionLSTM, self).__init__()
@@ -64,7 +69,6 @@ class ArSLAttentionLSTM(nn.Module):
 
     def forward(self, x):
         # Extract features with CNN
-        # x shape: [batch, 3, 224, 224]
         x = self.feature_extractor(x)  # [batch, 512, 7, 7]
         
         # Reshape for LSTM: [batch, channels, height, width] -> [batch, seq_len, features]
@@ -90,18 +94,22 @@ class ArSLAttentionLSTM(nn.Module):
         return x
 
 class ArSLTranslatorApp:
-    def __init__(self, root, model_path="models/improved_arsl_model.pth"):
-        self.root = root
-        self.setup_ui()
-        
+    def __init__(self, model_path="models/improved_arsl_model.pth"):
         # Set up model and transforms
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.setup_model(model_path)
+        print(f"Using device: {self.device}")
         
         # Camera variables
         self.cap = None
         self.is_camera_running = False
         self.camera_thread = None
+        
+        # Setup model
+        self.setup_model(model_path)
+        
+        # Create and run UI
+        self.root = tk.Tk()
+        self.setup_ui()
         
         # Currently displayed image
         self.current_image = None
@@ -112,6 +120,7 @@ class ArSLTranslatorApp:
 
     def setup_model(self, model_path):
         try:
+            print(f"Loading model from: {model_path}")
             # Load the checkpoint
             checkpoint = torch.load(model_path, map_location=self.device)
             
@@ -122,6 +131,8 @@ class ArSLTranslatorApp:
                 'saad', 'seen', 'sheen', 'ta', 'taa', 'thaa', 'thal', 'toot', 'waw', 'ya',
                 'yaa', 'zay'
             ])  # Default class names if not in checkpoint
+            
+            print(f"Number of classes: {len(self.class_names)}")
             
             # Initialize the model
             self.model = ArSLAttentionLSTM(num_classes=len(self.class_names)).to(self.device)
@@ -138,19 +149,17 @@ class ArSLTranslatorApp:
                 )
             ])
             
-            # Update status
-            self.status_text.set("Model loaded successfully!")
-            self.status_icon.config(text="✅")
-            self.status_label.config(fg="#27ae60")  # Green for success
+            print("Model loaded successfully!")
             
         except Exception as e:
-            self.status_text.set(f"Error loading model: {str(e)}")
-            self.status_icon.config(text="❌")
-            self.status_label.config(fg="#e74c3c")  # Red for error
             print(f"Error loading model: {e}")
+            if hasattr(self, 'status_text'):
+                self.status_text.set(f"Error loading model: {str(e)}")
+                self.status_icon.config(text="❌")
+                self.status_label.config(fg="#e74c3c")  # Red for error
 
     def setup_ui(self):
-        # Set up the UI (based on your existing code)
+        # Set up the UI
         self.root.title("Arabic Sign Language Translator")
         self.root.geometry("1000x700")  # Larger window for image display
         self.root.configure(bg="#f2f7f9")
@@ -190,7 +199,7 @@ class ArSLTranslatorApp:
 
         # Status
         self.status_text = tk.StringVar()
-        self.status_text.set("Loading model...")
+        self.status_text.set("Ready to translate...")
 
         # Image display frame (new)
         self.image_frame = tk.Frame(self.main_frame, bg="#ffffff", width=500, height=350, bd=1, relief=tk.SUNKEN)
@@ -240,7 +249,7 @@ class ArSLTranslatorApp:
         status_frame.pack(pady=10)
 
         # Status icon
-        self.status_icon = tk.Label(status_frame, text="⏳", font=("Segoe UI", 16), bg=bg_gradient)
+        self.status_icon = tk.Label(status_frame, text="🔍", font=("Segoe UI", 16), bg=bg_gradient)
         self.status_icon.pack(side=tk.LEFT, padx=(0, 5))
 
         # Status label
@@ -442,9 +451,121 @@ class ArSLTranslatorApp:
         except Exception as e:
             print(f"Prediction error: {e}")
             return "Error in prediction"
+            
+    def run(self):
+        self.root.mainloop()
 
-# Run the application
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ArSLTranslatorApp(root)
-    root.mainloop()
+# Now, let's create a function to launch the application from the notebook
+def create_folder_if_not_exists(folder):
+    """Create a folder if it doesn't exist"""
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+        print(f"Created folder: {folder}")
+    else:
+        print(f"Folder already exists: {folder}")
+
+# Create models directory if it doesn't exist
+import os
+create_folder_if_not_exists("models")
+
+# Now, let's create a simple test for the application that doesn't require running the UI
+# This is useful for validating the model without launching the full application
+
+def test_model(model_path):
+    """Test the model on a single image without launching the UI"""
+    import torch
+    import torchvision.transforms as transforms
+    from PIL import Image
+    import matplotlib.pyplot as plt
+    
+    # Device configuration
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+    
+    try:
+        # Load checkpoint
+        checkpoint = torch.load(model_path, map_location=device)
+        
+        # Get class names
+        class_names = checkpoint.get('class_names', [
+            'ain', 'al', 'aleff', 'bb', 'dal', 'dha', 'dhad', 'fa', 'gaaf', 'ghain',
+            'ha', 'haa', 'jeem', 'kaaf', 'khaa', 'la', 'laam', 'meem', 'nun', 'ra',
+            'saad', 'seen', 'sheen', 'ta', 'taa', 'thaa', 'thal', 'toot', 'waw', 'ya',
+            'yaa', 'zay'
+        ])
+        
+        # Create model
+        model = ArSLAttentionLSTM(num_classes=len(class_names)).to(device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        model.eval()
+        
+        # Image transforms
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            )
+        ])
+        
+        print("Model loaded successfully for testing.")
+        print(f"Class names: {class_names}")
+        print("Try to upload a test image using the function test_image(path_to_image)")
+        
+        # Return the model and transform for further use
+        return model, transform, class_names, device
+        
+    except Exception as e:
+        print(f"Error loading model: {e}")
+        return None, None, None, device
+
+def test_image(image_path, model, transform, class_names, device):
+    """Test a single image with the loaded model"""
+    try:
+        # Load and display the image
+        img = Image.open(image_path)
+        plt.figure(figsize=(6, 6))
+        plt.imshow(img)
+        plt.axis('off')
+        plt.title('Input Image')
+        plt.show()
+        
+        # Preprocess and predict
+        img_tensor = transform(img).unsqueeze(0).to(device)
+        
+        with torch.no_grad():
+            outputs = model(img_tensor)
+            probs = torch.nn.functional.softmax(outputs, dim=1)
+            values, indices = torch.topk(probs, 3)
+            
+        # Show top 3 predictions
+        results = []
+        for i in range(3):
+            idx = indices[0][i].item()
+            confidence = values[0][i].item() * 100
+            results.append((class_names[idx], confidence))
+        
+        # Display results
+        print("\nPrediction Results:")
+        for i, (class_name, confidence) in enumerate(results):
+            print(f"{i+1}. {class_name.upper()} - {confidence:.2f}%")
+            
+        # Return the top prediction for further use
+        return results[0][0], results[0][1]
+    
+    except Exception as e:
+        print(f"Error processing image: {e}")
+        return None, 0
+
+# Run the application function
+def run_app():
+    """Run the full UI application"""
+    app = ArSLTranslatorApp()
+    app.run()
+
+# You can either run the full application or test the model with single images
+print("\nThe code has been set up. You can now:")
+print("1. Run 'run_app()' to launch the full application")
+print("2. Run 'model, transform, class_names, device = test_model(\"models/improved_arsl_model.pth\")' to load the model for testing")
+print("3. After loading the model, run 'test_image(\"path/to/image.jpg\", model, transform, class_names, device)' to test individual images")
