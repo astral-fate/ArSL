@@ -1,4 +1,6 @@
-https://medium.com/data-science/visualizing-convolution-neural-networks-using-pytorch-3dfa8443e74e
+[https://medium.com/data-science/visualizing-convolution-neural-networks-using-pytorch-3dfa8443e74e
+](https://github.com/HarisIqbal88/PlotNeuralNet?tab=readme-ov-file)
+
 
 ## Setting up gpu env
 
